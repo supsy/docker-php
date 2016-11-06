@@ -63,4 +63,7 @@ RUN apt-get update && apt-get install -y git openssh-client --no-install-recomme
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php", "-a"]
+
+WORKDIR /var/www/html
+EXPOSE 80
+CMD ["apache2-foreground"]
