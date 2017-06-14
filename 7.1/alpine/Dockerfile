@@ -27,6 +27,8 @@ ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
+ENV PHPGEARMAN_URL="https://github.com/wcgallego/pecl-gearman/archive/gearman-2.0.3.tar.gz"
+
 COPY docker-php-source /usr/local/bin/
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
 
@@ -43,6 +45,22 @@ RUN set -xe \
 		CPPFLAGS="$PHP_CPPFLAGS" \
                 LDFLAGS="$PHP_LDFLAGS" \
         && docker-php-ext-install soap
+	\
+	&& mkdir -p /usr/src \
+	&& cd /usr/src \
+	\
+	&& wget -O phpgearman.tar.gz "$PHPGEARMAN_URL" \
+	&& mkdir -p /usr/src/phpgearman
+	&& tar -xzf /usr/src/phpgearman.tar.gz -C /usr/src/phpgearman
+	&& cd /usr/src/phpgearman
+	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
+	&& ./configure \
+		--build="$gnuArch" \
+	&& make -j "$(nproc)" \
+	&& make install \
+	&& make clean \
+	&& cd / \
+	&& rm -rf /usr/src/phpgearman \
 	\
 	&& apk del .build-deps
 
