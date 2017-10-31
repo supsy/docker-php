@@ -52,7 +52,6 @@ RUN buildDeps=" \
     && docker-php-ext-configure ldap --with-ldap-sasl \
     && docker-php-ext-install $phpModules \
     && printf "\n" | pecl install memcache \
-    && printf "\n" | pecl install memcached \
     && for ext in $phpModules; do \
            rm -f /usr/local/etc/php/conf.d/docker-php-ext-$ext.ini; \
        done \
